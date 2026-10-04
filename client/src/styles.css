@@ -117,3 +117,8 @@ label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; colo
 .footer { text-align: center; color: var(--muted); padding: 24px; border-top: 1px solid var(--border); }
 
 /* TODO: detail-layout and search-bar break on mobile (<768px) - see "Mobile responsive" issue */
+
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; max-width: 440px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+

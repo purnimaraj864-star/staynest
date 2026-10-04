@@ -19,13 +19,20 @@ export default function Trips() {
     load();
   }, []);
 
-  // TODO: ask for confirmation before cancelling.
-  const cancel = async (id) => {
+  const [cancellingBooking, setCancellingBooking] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const confirmCancel = async () => {
+    if (!cancellingBooking) return;
+    setIsCancelling(true);
     try {
-      await api.patch(`/bookings/${id}/cancel`);
+      await api.patch(`/bookings/${cancellingBooking._id}/cancel`);
+      setCancellingBooking(null);
       load();
     } catch (err) {
       setError(getErrorMessage(err));
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -54,12 +61,45 @@ export default function Trips() {
               <span className={`status status-${b.status}`}>{b.status}</span>
               <strong>{formatINR(b.totalPrice)}</strong>
               {['pending', 'confirmed'].includes(b.status) && (
-                <button className="btn btn-danger" onClick={() => cancel(b._id)}>Cancel</button>
+                <button className="btn btn-danger" onClick={() => setCancellingBooking(b)}>Cancel</button>
               )}
             </div>
           </div>
         ))}
       </div>
+
+      {cancellingBooking && (
+        <div className="modal-backdrop" onClick={() => setCancellingBooking(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Cancel Trip Confirmation</h3>
+            <p>
+              Are you sure you want to cancel your stay at{' '}
+              <strong>{cancellingBooking.listing?.title}</strong>?
+            </p>
+            <p className="muted small">
+              Dates: {formatDate(cancellingBooking.checkIn)} → {formatDate(cancellingBooking.checkOut)}
+            </p>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-outline"
+                disabled={isCancelling}
+                onClick={() => setCancellingBooking(null)}
+              >
+                Keep Booking
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                disabled={isCancelling}
+                onClick={confirmCancel}
+              >
+                {isCancelling ? 'Cancelling...' : 'Yes, Cancel Trip'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
