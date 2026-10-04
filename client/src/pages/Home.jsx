@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api, { getErrorMessage } from '../api/client.js';
 import ListingCard from '../components/ListingCard.jsx';
+import SkeletonCard from '../components/SkeletonCard.jsx';
 import Loader from '../components/Loader.jsx';
 import { STAY_TYPES } from '../utils/format.js';
 
@@ -53,7 +54,11 @@ export default function Home() {
 
       {error && <p className="error">{error}</p>}
       {loading ? (
-        <Loader />
+        <div className="grid">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       ) : listings.length === 0 ? (
         <p className="muted">No stays match your search.</p>
       ) : (
